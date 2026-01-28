@@ -29,11 +29,12 @@ return {
                 "lua_ls",
                 "rust_analyzer",
                 "gopls",
-                "pylsp",
+                "basedpyright",
+                "ruff",
+                "ts_ls",
             },
             handlers = {
-                function(server_name) -- default handler (optional)
-
+                function(server_name)
                     require("lspconfig")[server_name].setup {
                         capabilities = capabilities
                     }
@@ -52,6 +53,39 @@ return {
                         }
                     }
                 end,
+
+                ["basedpyright"] = function()
+                    local lspconfig = require("lspconfig")
+                    lspconfig.basedpyright.setup {
+                        capabilities = capabilities,
+                        settings = {
+                            basedpyright = {
+                                analysis = {
+                                    typeCheckingMode = "standard",
+                                    autoSearchPaths = true,
+                                    useLibraryCodeForTypes = true,
+                                    diagnosticMode = "openFilesOnly",
+
+                                    -- Ignore these rules so Ruff handles them (prevents duplicates)
+                                    diagnosticSeverityOverrides = {
+                                        reportUnusedImport = "none",
+                                        reportUnusedClass = "none",
+                                        reportUnusedFunction = "none",
+                                        reportUnusedVariable = "none",
+                                        reportDuplicateImport = "none",
+                                    },
+                                },
+                            },
+                        },
+                    }
+                end,
+
+                ["ruff"] = function()
+                    local lspconfig = require("lspconfig")
+                    lspconfig.ruff.setup {
+                        capabilities = capabilities,
+                    }
+                end,
             }
         })
 
@@ -60,7 +94,7 @@ return {
         cmp.setup({
             snippet = {
                 expand = function(args)
-                    require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+                    require('luasnip').lsp_expand(args.body)
                 end,
             },
             mapping = cmp.mapping.preset.insert({
@@ -71,14 +105,32 @@ return {
             }),
             sources = cmp.config.sources({
                 { name = 'nvim_lsp' },
-                { name = 'luasnip' }, -- For luasnip users.
+                { name = 'luasnip' },
             }, {
                 { name = 'buffer' },
             })
         })
 
+        -- Customizing Diagnostic Signs (Gutter Icons)
+        -- local signs = { Error = "✘", Warn = "▲", Hint = "⚑", Info = "»" }
+        -- for type, icon in pairs(signs) do
+        --     local hl = "DiagnosticSign" .. type
+        --     vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+        -- end
+
+        -- Diagnostic Configuration
         vim.diagnostic.config({
-            -- update_in_insert = true,
+            -- Enable virtual text (inline errors)
+            virtual_text = {
+                source = "if_many",
+                spacing = 4,
+            },
+            -- Enable signs in the gutter
+            signs = true,
+            -- Update diagnostics in insert mode (false is less distracting)
+            update_in_insert = false,
+            -- Sort diagnostics by severity (Error > Warning)
+            severity_sort = true,
             float = {
                 focusable = false,
                 style = "minimal",
