@@ -84,6 +84,13 @@ return {
                     local lspconfig = require("lspconfig")
                     lspconfig.ruff.setup {
                         capabilities = capabilities,
+                        init_options = {
+                            settings = {
+                                    args = {
+                                    "--line-length=120"
+                                },
+                            }
+                        }
                     }
                 end,
             }
