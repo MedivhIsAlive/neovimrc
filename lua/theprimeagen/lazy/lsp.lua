@@ -68,6 +68,8 @@ return {
 
                                     -- Ignore these rules so Ruff handles them (prevents duplicates)
                                     diagnosticSeverityOverrides = {
+                                        reportMissingModuleSource = "none",
+                                        reportIncompatibleVariableOverride = "none",
                                         reportUnusedImport = "none",
                                         reportUnusedClass = "none",
                                         reportUnusedFunction = "none",

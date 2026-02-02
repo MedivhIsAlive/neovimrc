@@ -20,8 +20,9 @@ return {
                 styles = {
                     -- Style to be applied to different syntax groups
                     -- Value is any valid attr-list value for `:help nvim_set_hl`
-                    comments = { italic = false },
                     keywords = { italic = false },
+                    functions = { italic = false },
+                    variables = { italic = false },
                     -- Background styles. Can be "dark", "transparent" or "normal"
                     sidebars = "dark", -- style for sidebars, see below
                     floats = "dark", -- style for floating windows
@@ -36,6 +37,10 @@ return {
         config = function()
             require('rose-pine').setup({
                 disable_background = true,
+
+                styles = {
+                    italic = false,
+                },
             })
 
             vim.cmd("colorscheme rose-pine")
@@ -43,6 +48,4 @@ return {
             ColorMyPencils()
         end
     },
-
-
 }
